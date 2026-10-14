@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Code Ocean post-install hook.
+# Runs after the base R 4.2.x image is provisioned. Installs the CRAN and
+# Bioconductor packages the capsule's stage scripts and Cooper's helper
+# functions require.
+#
+# CRAN is pinned to the Posit Package Manager snapshot that matches
+# Bioconductor 3.16 / R 4.2.x so package versions are reproducible across
+# capsule rebuilds.
+
+set -euo pipefail
+
+CRAN_SNAPSHOT="https://packagemanager.posit.co/cran/__linux__/jammy/2023-04-20"
+NCPUS=4
+
+CRAN_PKGS=(
+  BiocManager remotes
+  tidyverse readxl vroom
+  ggsci ggpubr ggtext ggfortify ggnewscale ggrepel circlize
+  survival survminer maxstat rstatix
+  patchwork cowplot scales matrixStats
+)
+
+BIOC_PKGS=(
+  DESeq2 edgeR limma tximport GSVA
+  clusterProfiler fgsea GEOquery
+  AnnotationDbi org.Hs.eg.db GenomicFeatures
+  SummarizedExperiment rtracklayer ComplexHeatmap vsn
+)
+
+# Build an R vector literal from a bash array: a b c -> c('a','b','c')
+r_vec () { printf "c('%s')" "$(IFS=\'\,\'; echo "$*" | sed "s/ /','/g")"; }
+
+echo "[postInstall] Installing CRAN packages via Posit snapshot."
+Rscript -e "options(repos = c(CRAN = '${CRAN_SNAPSHOT}'), Ncpus = ${NCPUS}); \
+            install.packages($(r_vec "${CRAN_PKGS[@]}"))"
+
+echo "[postInstall] Installing Bioconductor 3.16 packages."
+Rscript -e "BiocManager::install(version = '3.16', ask = FALSE, update = FALSE); \
+            BiocManager::install($(r_vec "${BIOC_PKGS[@]}"), \
+                                 update = FALSE, ask = FALSE, Ncpus = ${NCPUS})"
+
+echo "[postInstall] Done."
