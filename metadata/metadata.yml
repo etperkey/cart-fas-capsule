@@ -1,0 +1,61 @@
+metadata_version: 1
+name: >
+  Harnessing Fas/FasL-dependent bystander killing to mitigate antigen escape
+  in CAR-T therapy — bulk RNA-seq analysis capsule (Lin, Chorazeczewski et al.,
+  Blood Cancer Discovery BCD-26-0329)
+description: >
+  Reproducible analysis capsule prepared for revision submission to Blood
+  Cancer Discovery (manuscript BCD-26-0329, Lin, Chorazeczewski et al.) in
+  response to the journal's Code Ocean requirement. It reproduces the bulk
+  RNA-seq analyses in the paper on Fas/FasL-dependent bystander killing by
+  CD19 CAR T cells in large B-cell lymphoma (co-senior authors J. Kline,
+  UChicago, and J. D. Brody, Mount Sinai; corresponding: J. D. Brody).
+  The capsule reproduces Figure 1A–I and Supplementary Figure 1A–F from
+  normalized intermediates: Stanford (dbGaP phs003145.v1.p1) and ZUMA-1 (Kite
+  Pharma) axi-cel cohorts batch-combined via limma `removeBatchEffect`, and
+  the NCI R-CHOP comparator cohort (dbGaP phs001444.v2.p1) built from GDC
+  STAR counts. Analyses include DESeq2 variance-stabilizing transformation,
+  GSVA scoring of the Death Receptor Signature (Singh 2020), survminer
+  `surv_cutpoint` max-stat Kaplan–Meier survival for CD19/FAS/DRS, and
+  Kaplan–Meier on B-cell-resolved CD19/FAS expression inferred from
+  CIBERSORTx High-Resolution deconvolution (fractions and gene expression
+  profiles shipped as inputs).
+  The raw dbGaP counts are not redistributed; the capsule ships the
+  variance-stabilized matrices and clinical metadata as a restricted data
+  asset. Users with dbGaP phs001444 and phs003145 access can regenerate the
+  intermediates from the included prepare scripts.
+tags:
+  - CAR-T
+  - DLBCL
+  - lymphoma
+  - FAS
+  - FASLG
+  - bystander killing
+  - bulk RNA-seq
+  - DESeq2
+  - GSVA
+  - CIBERSORTx
+  - Kaplan-Meier
+  - Death Receptor Signature
+authors:
+  - name: Matthew J. Lin                     # co-first
+    affiliations: [{ name: Icahn School of Medicine at Mount Sinai }]
+  - name: Joanna K. Chorazeczewski           # co-first
+    affiliations: [{ name: University of Chicago }]
+  - name: Alan Cooper                        # analyst, original author of these scripts
+    affiliations: [{ name: Yale School of Management }]
+  - name: Nicholas A. Phillips
+    affiliations: [{ name: University of Chicago }]
+  - name: Eric T. Perkey                     # capsule maintainer
+    affiliations: [{ name: University of Chicago }]
+  - name: Justin Kline                       # co-senior
+    affiliations: [{ name: University of Chicago }]
+  - name: Joshua D. Brody                    # co-senior, corresponding
+    affiliations: [{ name: Icahn School of Medicine at Mount Sinai }]
+corresponding_contributor:
+  name: Joshua D. Brody
+  email: joshua.brody@mssm.edu
+# TODO before publication:
+#  - obtain Brody-lab sign-off on capsule DOI and listed author order
+#  - confirm final author list / ORCID iDs against submitted manuscript
+#  - update Data Availability Statement to reference the capsule DOI

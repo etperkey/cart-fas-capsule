@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# Code Ocean capsule entry point.
+# Reproduces Figure 1A–I and Supplementary Figure 1A–F of
+#   Lin, Chorazeczewski et al. — FAS–FASLG bystander killing by CD19 CAR T.
+# Each stage writes outputs under /results and reads inputs under /data.
+
+set -euo pipefail
+
+STAGE="${1:-all}"
+export FORCE="${FORCE:-0}"
+
+cd /code
+
+case "$STAGE" in
+  prepare)
+    Rscript scripts/00_prepare_data.R
+    ;;
+  bulk)
+    Rscript scripts/10_bulk_normalize_combine.R
+    Rscript scripts/11_bulk_gsva_drs.R
+    Rscript scripts/12_bulk_survival.R
+    Rscript scripts/13_nci_bulk_survival.R
+    ;;
+  cibersortx)
+    Rscript scripts/20_cibersortx_bcell_survival.R
+    ;;
+  figures)
+    Rscript scripts/30_render_figures.R
+    ;;
+  all)
+    Rscript scripts/00_prepare_data.R
+    Rscript scripts/10_bulk_normalize_combine.R
+    Rscript scripts/11_bulk_gsva_drs.R
+    Rscript scripts/12_bulk_survival.R
+    Rscript scripts/13_nci_bulk_survival.R
+    Rscript scripts/20_cibersortx_bcell_survival.R
+    Rscript scripts/30_render_figures.R
+    ;;
+  *)
+    echo "Usage: run [prepare|bulk|cibersortx|figures|all]" >&2
+    exit 2
+    ;;
+esac

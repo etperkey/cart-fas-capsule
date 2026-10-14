@@ -1,0 +1,29 @@
+# Code Ocean capsule — ignore reproducible outputs and heavy inputs
+results/*
+!results/.gitkeep
+data/raw/*
+!data/raw/.gitkeep
+data/derived/*
+!data/derived/.gitkeep
+
+# R
+.Rhistory
+.RData
+.Ruserdata
+.Rproj.user/
+*.Rproj
+renv/library/
+renv/python/
+renv/staging/
+renv/local/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
