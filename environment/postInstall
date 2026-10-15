@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # Code Ocean post-install hook.
-# Runs after the base R 4.2.x image is provisioned. Installs the CRAN and
-# Bioconductor packages the capsule's stage scripts and Cooper's helper
-# functions require.
+# Runs after the base R 4.4.2 image (Ubuntu 22.04 / Jammy) is provisioned.
+# Installs the CRAN and Bioconductor packages the capsule's stage scripts
+# and Cooper's helper functions require.
 #
-# CRAN is pinned to the Posit Package Manager snapshot that matches
-# Bioconductor 3.16 / R 4.2.x so package versions are reproducible across
-# capsule rebuilds.
+# CRAN is pointed at the Posit Package Manager jammy snapshot so install.packages()
+# pulls Linux binary builds matching Ubuntu 22.04 / R 4.4.2 — this avoids
+# source compilation of heavy packages (DESeq2, survminer, ComplexHeatmap).
+# Bioconductor is pinned to 3.20, which is the release that matches R 4.4.2.
 
 set -euo pipefail
 
-CRAN_SNAPSHOT="https://packagemanager.posit.co/cran/__linux__/jammy/2023-04-20"
+CRAN_SNAPSHOT="https://packagemanager.posit.co/cran/__linux__/jammy/latest"
 NCPUS=4
 
 CRAN_PKGS=(
@@ -23,7 +24,7 @@ CRAN_PKGS=(
 
 BIOC_PKGS=(
   DESeq2 edgeR limma tximport GSVA
-  clusterProfiler fgsea GEOquery
+  GEOquery
   AnnotationDbi org.Hs.eg.db GenomicFeatures
   SummarizedExperiment rtracklayer ComplexHeatmap vsn
 )
@@ -31,12 +32,12 @@ BIOC_PKGS=(
 # Build an R vector literal from a bash array: a b c -> c('a','b','c')
 r_vec () { printf "c('%s')" "$(IFS=\'\,\'; echo "$*" | sed "s/ /','/g")"; }
 
-echo "[postInstall] Installing CRAN packages via Posit snapshot."
+echo "[postInstall] Installing CRAN packages via Posit jammy snapshot."
 Rscript -e "options(repos = c(CRAN = '${CRAN_SNAPSHOT}'), Ncpus = ${NCPUS}); \
             install.packages($(r_vec "${CRAN_PKGS[@]}"))"
 
-echo "[postInstall] Installing Bioconductor 3.16 packages."
-Rscript -e "BiocManager::install(version = '3.16', ask = FALSE, update = FALSE); \
+echo "[postInstall] Installing Bioconductor 3.20 packages."
+Rscript -e "BiocManager::install(version = '3.20', ask = FALSE, update = FALSE); \
             BiocManager::install($(r_vec "${BIOC_PKGS[@]}"), \
                                  update = FALSE, ask = FALSE, Ncpus = ${NCPUS})"
 
