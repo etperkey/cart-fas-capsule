@@ -1,44 +1,16 @@
 #!/usr/bin/env bash
-# Code Ocean post-install hook.
-# Runs after the base R 4.4.2 image (Ubuntu 22.04 / Jammy) is provisioned.
-# Installs the CRAN and Bioconductor packages the capsule's stage scripts
-# and Cooper's helper functions require.
+# Code Ocean postInstall for R 4.4.2 on Ubuntu 22.04 Jammy.
+# Pulls Posit binary R packages (jammy) + Bioconductor 3.20.
 #
-# CRAN is pointed at the Posit Package Manager jammy snapshot so install.packages()
-# pulls Linux binary builds matching Ubuntu 22.04 / R 4.4.2 — this avoids
-# source compilation of heavy packages (DESeq2, survminer, ComplexHeatmap).
-# Bioconductor is pinned to 3.20, which is the release that matches R 4.4.2.
+# HTTPUserAgent is set so Posit Package Manager routes to pre-compiled
+# Linux binaries rather than source tarballs (critical for build time —
+# source compilation of RcppArmadillo, DESeq2, lme4, etc. is 10-30x slower).
+# Bioconductor packages still come from Bioconductor's own repo (source),
+# as Bioc does not provide Linux binaries the way Posit does for CRAN.
+set -eo pipefail
 
-set -euo pipefail
+Rscript -e 'options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/jammy/latest"), HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(), paste(getRversion(), R.version$platform, R.version$arch, R.version$os)), Ncpus = 4); install.packages(c("BiocManager","remotes","tidyverse","readxl","vroom","ggsci","ggpubr","ggtext","ggfortify","ggnewscale","ggrepel","circlize","survival","survminer","maxstat","rstatix","patchwork","cowplot","scales","matrixStats"))'
 
-CRAN_SNAPSHOT="https://packagemanager.posit.co/cran/__linux__/jammy/latest"
-NCPUS=4
-
-CRAN_PKGS=(
-  BiocManager remotes
-  tidyverse readxl vroom
-  ggsci ggpubr ggtext ggfortify ggnewscale ggrepel circlize
-  survival survminer maxstat rstatix
-  patchwork cowplot scales matrixStats
-)
-
-BIOC_PKGS=(
-  DESeq2 edgeR limma tximport GSVA
-  GEOquery
-  AnnotationDbi org.Hs.eg.db GenomicFeatures
-  SummarizedExperiment rtracklayer ComplexHeatmap vsn
-)
-
-# Build an R vector literal from a bash array: a b c -> c('a','b','c')
-r_vec () { printf "c('%s')" "$(IFS=\'\,\'; echo "$*" | sed "s/ /','/g")"; }
-
-echo "[postInstall] Installing CRAN packages via Posit jammy snapshot."
-Rscript -e "options(repos = c(CRAN = '${CRAN_SNAPSHOT}'), Ncpus = ${NCPUS}); \
-            install.packages($(r_vec "${CRAN_PKGS[@]}"))"
-
-echo "[postInstall] Installing Bioconductor 3.20 packages."
-Rscript -e "BiocManager::install(version = '3.20', ask = FALSE, update = FALSE); \
-            BiocManager::install($(r_vec "${BIOC_PKGS[@]}"), \
-                                 update = FALSE, ask = FALSE, Ncpus = ${NCPUS})"
+Rscript -e 'options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/jammy/latest"), HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(), paste(getRversion(), R.version$platform, R.version$arch, R.version$os)), Ncpus = 4); BiocManager::install(version = "3.20", ask = FALSE, update = FALSE); BiocManager::install(c("DESeq2","edgeR","limma","tximport","GSVA","GEOquery","AnnotationDbi","org.Hs.eg.db","GenomicFeatures","SummarizedExperiment","rtracklayer","ComplexHeatmap","vsn"), update = FALSE, ask = FALSE, Ncpus = 4)'
 
 echo "[postInstall] Done."
