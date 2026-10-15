@@ -40,7 +40,8 @@ message(sprintf("[10_bulk_normalize_combine] %d samples, %d genes.",
 
 cart_df <- build_cohort_df(zuma1_stanford_vsd, clindata_tib)
 
-saveRDS(cart_df,   derived_path("panels", "cart_df.rds"))
-saveRDS(exprs_mat, derived_path("panels", "exprs_mat.rds"))
+if (!dir.exists(panels_path())) dir.create(panels_path(), recursive = TRUE, showWarnings = FALSE)
+saveRDS(cart_df,   panels_path("cart_df.rds"))
+saveRDS(exprs_mat, panels_path("exprs_mat.rds"))
 
 message("[10_bulk_normalize_combine] Wrote cart_df + exprs_mat to derived/panels/.")

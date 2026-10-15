@@ -11,7 +11,7 @@
 source("scripts/_common.R", chdir = FALSE)
 
 load_panel <- function(id) {
-  p <- derived_path("panels", paste0(id, ".rds"))
+  p <- panels_path(paste0(id, ".rds"))
   if (!file.exists(p)) {
     warning(sprintf("[30_render_figures] Missing panel: %s", id))
     return(NULL)

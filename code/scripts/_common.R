@@ -46,7 +46,7 @@ suppressMessages({
 })
 
 ensure_dir(results_path())
-ensure_dir(derived_path("panels"))
+ensure_dir(panels_path())
 
 # Palettes used across stages (lifted verbatim from Cooper's Rmd setup).
 fas_colors <- c("*FAS* low" = "purple", "*FAS* high" = "green3")
@@ -145,10 +145,13 @@ maxstat_cut <- function(df, time_col, status_col, value_col, minprop = 0.1) {
                   ".rank", minprop = minprop, progressbar = FALSE)
 }
 
-#' Save a figure's underlying ggplot/grob to `derived/panels/<id>.rds`
+#' Save a figure's underlying ggplot/grob to `results/panels/<id>.rds`
 #' AND a standalone PDF to `/results/<id>.pdf`.
+#' RDS lives under /results so stage 30 can still read it on Code Ocean,
+#' where /data is mounted read-only.
 save_panel <- function(id, obj, width = 10, height = 7) {
-  rds_path <- derived_path("panels", paste0(id, ".rds"))
+  if (!dir.exists(panels_path())) dir.create(panels_path(), recursive = TRUE, showWarnings = FALSE)
+  rds_path <- panels_path(paste0(id, ".rds"))
   pdf_path <- results_path(paste0(id, ".pdf"))
   saveRDS(obj, rds_path)
   ggsave(pdf_path, obj, width = width, height = height, device = cairo_pdf)

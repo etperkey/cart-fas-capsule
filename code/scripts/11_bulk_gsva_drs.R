@@ -13,7 +13,7 @@
 # ------------------------------------------------------------------
 source("scripts/_common.R", chdir = FALSE)
 
-cart_df <- readRDS(derived_path("panels", "cart_df.rds"))
+cart_df <- readRDS(panels_path("cart_df.rds"))
 
 base_pretreatment <- cart_df %>%
   dplyr::filter(biopsy_time == "Pretreatment",
@@ -31,7 +31,7 @@ cutpoints <- list(
   drs_efs      = drs_efs_cut_res,
   drsNoFAS_efs = drsNoFAS_efs_cut_res
 )
-saveRDS(cutpoints, derived_path("panels", "cutpoints.rds"))
+saveRDS(cutpoints, panels_path("cutpoints.rds"))
 
 for (nm in names(cutpoints)) {
   message(sprintf("[11_bulk_gsva_drs]   %-13s cutpoint = %.4f",

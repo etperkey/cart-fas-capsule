@@ -26,7 +26,7 @@ if (!file.exists(nci_vsd_path) || !file.exists(nci_meta_path)) {
     nci_vsd_path, nci_meta_path))
 }
 
-cutpoints <- readRDS(derived_path("panels", "cutpoints.rds"))
+cutpoints <- readRDS(panels_path("cutpoints.rds"))
 fas_cut  <- cutpoints$fas_efs$cutpoint[["cutpoint"]]
 cd19_cut <- cutpoints$cd19_efs$cutpoint[["cutpoint"]]
 

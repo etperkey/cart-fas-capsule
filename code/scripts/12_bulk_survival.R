@@ -18,8 +18,8 @@
 # ------------------------------------------------------------------
 source("scripts/_common.R", chdir = FALSE)
 
-cart_df   <- readRDS(derived_path("panels", "cart_df.rds"))
-cutpoints <- readRDS(derived_path("panels", "cutpoints.rds"))
+cart_df   <- readRDS(panels_path("cart_df.rds"))
+cutpoints <- readRDS(panels_path("cutpoints.rds"))
 
 fas_cut      <- cutpoints$fas_efs$cutpoint[["cutpoint"]]
 cd19_cut     <- cutpoints$cd19_efs$cutpoint[["cutpoint"]]
@@ -119,7 +119,7 @@ hmap_gb <- grid::grid.grabExpr(draw(
   column_title = "Pairwise correlation of genes in the Death Receptor Score",
   heatmap_legend_side = "bottom"))
 grDevices::dev.off()
-saveRDS(hmap_gb, derived_path("panels", "sup1a_drs_gene_corr_heatmap.rds"))
+saveRDS(hmap_gb, panels_path("sup1a_drs_gene_corr_heatmap.rds"))
 grDevices::cairo_pdf(results_path("sup1a_drs_gene_corr_heatmap.pdf"),
                      width = 7, height = 7, bg = "transparent")
 grid::grid.draw(hmap_gb); dev.off()

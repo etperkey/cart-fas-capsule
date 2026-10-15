@@ -33,7 +33,7 @@ case "$STAGE" in
     Rscript scripts/11_bulk_gsva_drs.R
     Rscript scripts/12_bulk_survival.R
     Rscript scripts/13_nci_bulk_survival.R
-    Rscript scripts/20_cibersortx_bcell_survival.R
+    Rscript scripts/20_cibersortx_bcell_survival.R || echo "[run] Stage 20 (CIBERSORTx) skipped: CSVs not deposited at data/derived/cibersortx/"
     Rscript scripts/30_render_figures.R
     ;;
   *)

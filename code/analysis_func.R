@@ -20,9 +20,11 @@ suppressMessages(library(GenomicFeatures))
 
 # GSEA and GSVA
 suppressMessages(library(GSVA))
-suppressMessages(library(clusterProfiler))
-# ggtree via remotes::install_github('YuLab-SMU/ggtree')
-suppressMessages(library(fgsea))
+# clusterProfiler and fgsea are only used by Cooper's GSEA wrapper (not by any
+# Fig 1 / Sup 1 panel this capsule reproduces). Loaded only if available so
+# the capsule doesn't require them.
+suppressWarnings(suppressMessages(require(clusterProfiler, quietly = TRUE)))
+suppressWarnings(suppressMessages(require(fgsea, quietly = TRUE)))
 
 # Statistics (other than base stats)
 suppressMessages(library(rstatix))
@@ -808,18 +810,29 @@ fun_gsva <- function(lcpm, genesets) {
   #   gsva_dge - a matrix of GSVA scores by sample
   
   vec_gs <- unique(genesets$gs)
-  gsva_dge <- gsva(
-    expr = lcpm,
-    kcdf = "Gaussian",
-    gset.idx.list = lapply(vec_gs,
-                           function(gs1) genesets %>%
-                             filter(gs == gs1) %>%
-                             pull(gene)
-    ),
-    annotation = NULL,
-    method = "gsva",
-    verbose = TRUE
-  )
+  gene_sets <- lapply(vec_gs,
+                      function(gs1) genesets %>%
+                        filter(gs == gs1) %>%
+                        pull(gene))
+  names(gene_sets) <- vec_gs
+
+  # GSVA 1.50+ (Bioc 3.17+) replaced direct-argument gsva() with parameter
+  # objects. Branch on version so this code runs on both GSVA 1.46 (R 4.2.x,
+  # Bioc 3.16 — the manuscript's pin) and GSVA 2.0+ (R 4.4.2, Bioc 3.20 —
+  # the Code Ocean environment).
+  if (utils::packageVersion("GSVA") >= "1.50") {
+    gp <- GSVA::gsvaParam(exprData = lcpm, geneSets = gene_sets, kcdf = "Gaussian")
+    gsva_dge <- GSVA::gsva(gp, verbose = TRUE)
+  } else {
+    gsva_dge <- gsva(
+      expr = lcpm,
+      kcdf = "Gaussian",
+      gset.idx.list = gene_sets,
+      annotation = NULL,
+      method = "gsva",
+      verbose = TRUE
+    )
+  }
   
   # Rename matrix of GSVA output to include gene set names
   if (nrow(gsva_dge) == length(vec_gs)) {

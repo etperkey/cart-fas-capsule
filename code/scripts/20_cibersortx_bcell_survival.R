@@ -51,8 +51,8 @@ if (!file.exists(frac_path) || !file.exists(gep_path)) {
     frac_path, gep_path))
 }
 
-cart_df   <- readRDS(derived_path("panels", "cart_df.rds"))
-cutpoints <- readRDS(derived_path("panels", "cutpoints.rds"))
+cart_df   <- readRDS(panels_path("cart_df.rds"))
+cutpoints <- readRDS(panels_path("cutpoints.rds"))
 
 frac_df <- read_csv(frac_path, show_col_types = FALSE)
 gep_mat <- read_csv(gep_path,  show_col_types = FALSE) %>%
